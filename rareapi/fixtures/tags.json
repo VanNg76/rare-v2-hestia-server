@@ -1,0 +1,25 @@
+[
+    {
+        "model": "rareapi.tag",
+        "pk": 1,
+        "fields": {
+            "label": "My first label"
+        }
+    },
+    {
+        "model": "rareapi.tag",
+        "pk": 2,
+        "fields": {
+            "label": "A second label"
+        }
+    },
+    {
+        "model": "rareapi.tag",
+        "pk": 3,
+        "fields": {
+            "label": "another label"
+        }
+    }
+
+]
+
