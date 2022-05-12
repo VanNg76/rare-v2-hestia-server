@@ -1,0 +1,43 @@
+[
+    {
+        "model": "rareapi.post",
+        "pk": 1,
+        "fields": {
+            "category": 1,
+            "title": "My first post",
+            "publication_date": "2022-05-01",
+            "image_url": "http://www.myimages.com/w",
+            "content": "This is my first awesome post",
+            "approved": true,
+            "user": 1
+
+        }
+    },
+    {
+        "model": "rareapi.post",
+        "pk": 2,
+        "fields": {
+            "category": 3,
+            "title": "My next post",
+            "publication_date": "2021-09-01",
+            "image_url": "http://www.myimages.com/rw",
+            "content": "This is my first awesome post",
+            "approved": false,
+            "user": 1
+        }
+    },
+    {
+        "model": "rareapi.post",
+        "pk": 3,
+        "fields": {
+            "category": 2,
+            "title": "My 3rd post",
+            "publication_date": "2021-05-01",
+            "image_url": "http://www.myimages.com/x",
+            "content": "This is my third awesome post",
+            "approved": true,
+            "user": 1
+        }
+    }
+
+]

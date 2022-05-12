@@ -1,0 +1,27 @@
+[
+    {
+        "model": "rareapi.reaction",
+        "pk": 1,
+        "fields": {
+            "label": "Sports",
+            "image_url": "https://pixabay.com/333333"
+        }
+    },
+    {
+        "model": "rareapi.reaction",
+        "pk": 2,
+        "fields": {
+            "label": "Health",
+            "image_url": "https://pixabay.com/9999"
+        }
+    },
+    {
+        "model": "rareapi.reaction",
+        "pk": 3,
+        "fields": {
+            "label": "Drinking",
+            "image_url": "https://pixabay.com/33334444"
+        }
+    }
+
+]

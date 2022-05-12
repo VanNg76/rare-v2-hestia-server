@@ -1,0 +1,24 @@
+[
+    {
+        "model": "rareapi.category",
+        "pk": 1,
+        "fields": {
+            "label": "Sports"
+        }
+    },
+    {
+        "model": "rareapi.category",
+        "pk": 2,
+        "fields": {
+            "label": "Health"
+        }
+    },
+    {
+        "model": "rareapi.category",
+        "pk": 3,
+        "fields": {
+            "label": "Drinking"
+        }
+    }
+
+]
