@@ -11,3 +11,11 @@ class Post(models.Model):
     content = models.CharField(max_length=100)
     approved = models.BooleanField()
     tags = models.ManyToManyField("Tag")
+    
+    @property
+    def is_author(self):
+        return self.__is_author
+
+    @is_author.setter
+    def is_author(self, value):
+        self.__is_author = value

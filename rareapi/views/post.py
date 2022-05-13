@@ -13,6 +13,10 @@ class PostView(ViewSet):
         """ single post """
         try:
             post = Post.objects.get(pk=pk)
+            if post.user_id == request.auth.user.id:
+                    post.is_author = True
+            else:
+                post.is_author = False
             serializer = PostSerializer(post)
             return Response(serializer.data)
         except Post.DoesNotExist as ex:
@@ -33,10 +37,28 @@ class PostView(ViewSet):
                 posts = posts.filter(user=rare_user)
             else:
                 posts = Post.objects.all()
+            
+            for post in posts:
+                if post.user_id == request.auth.user.id:
+                    post.is_author = True
+                else:
+                    post.is_author = False
+
             serializer = PostSerializer(posts, many=True)
             return Response(serializer.data)
         except Post.DoesNotExist as ex:
             return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
+
+    def update(self, request, pk):
+        """Handle PUT requests for a post"""
+  
+        post = Post.objects.get(pk=pk)
+        serializer = CreatePostSerializer(post, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(None, status=status.HTTP_204_NO_CONTENT)
+    
 
     def create(self, request):
         """ POST a post """
@@ -60,7 +82,7 @@ class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ('id', 'title', 'publication_date', 'image_url', 'content',
-                  'approved', 'category', 'user')
+                  'approved', 'category', 'user', 'is_author')
         depth = 2
 
 class CreatePostSerializer(serializers.ModelSerializer):
