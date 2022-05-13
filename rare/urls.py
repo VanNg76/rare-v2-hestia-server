@@ -22,6 +22,11 @@ from rest_framework import routers
 router = routers.DefaultRouter(trailing_slash=False)
 
 
+from rareapi.views.post import PostView
+
+router = routers.DefaultRouter(trailing_slash=False)
+router.register(r'posts', PostView, 'post')
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('register', register_user),
