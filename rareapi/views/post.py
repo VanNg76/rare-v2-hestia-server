@@ -2,6 +2,8 @@
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import serializers, status
+from rest_framework.authtoken.models import Token
+from django.contrib.auth.models import User
 
 from rareapi.models import RareUser, Category, Post
 
@@ -17,10 +19,22 @@ class PostView(ViewSet):
             return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
 
     def list(self, request):
-        """ all posts"""        
-        posts = Post.objects.all()
-        serializer = PostSerializer(posts, many=True)
-        return Response(serializer.data)
+        """Handle GET requests to get all posts
+
+        Returns:
+            Response -- JSON serialized list of posts
+        """
+        try:
+            posts = Post.objects.all()
+            user = request.query_params.get('user_id', None)
+            users = User.objects.get(auth_token=user)
+            rare_user = RareUser.objects.get(user=users)
+            if user is not None:
+                posts = posts.filter(user=rare_user)
+            serializer = PostSerializer(posts, many=True)
+            return Response(serializer.data)
+        except Post.DoesNotExist as ex:
+            return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
 
     def create(self, request):
         """ POST a post """
