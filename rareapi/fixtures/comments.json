@@ -14,7 +14,7 @@
         "pk": 2,
         "fields": {
             "post": 2,
-            "author": 2,
+            "author": 1,
             "created_on": "2020-10-09",
             "content": "My other favorite comment"
         }
