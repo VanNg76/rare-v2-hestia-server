@@ -67,5 +67,5 @@ class CreatePostSerializer(serializers.ModelSerializer):
     """use for create (validation received data from client)"""
     class Meta:
         model = Post
-        fields = ('id', 'title', 'publication_date', 'image_url', 'content',
-                  'approved', 'category', 'user')
+        fields = ('id', 'title', 'publication_date', 'image_url', 'content', 'approved', 'category', 'user', 'tags')
+        depth = 2
