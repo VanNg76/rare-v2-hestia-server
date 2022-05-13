@@ -27,10 +27,12 @@ class PostView(ViewSet):
         try:
             posts = Post.objects.all()
             user = request.query_params.get('user_id', None)
-            users = User.objects.get(auth_token=user)
-            rare_user = RareUser.objects.get(user=users)
             if user is not None:
+                users = User.objects.get(auth_token=user)
+                rare_user = RareUser.objects.get(user=users)
                 posts = posts.filter(user=rare_user)
+            else:
+                posts = Post.objects.all()
             serializer = PostSerializer(posts, many=True)
             return Response(serializer.data)
         except Post.DoesNotExist as ex:
@@ -59,7 +61,7 @@ class PostSerializer(serializers.ModelSerializer):
         model = Post
         fields = ('id', 'title', 'publication_date', 'image_url', 'content',
                   'approved', 'category', 'user')
-        depth = 1
+        depth = 2
 
 class CreatePostSerializer(serializers.ModelSerializer):
     """use for create (validation received data from client)"""
