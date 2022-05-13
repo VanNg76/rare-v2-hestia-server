@@ -20,9 +20,9 @@ class PostView(ViewSet):
         try:
             posts = Post.objects.all()
             user = request.query_params.get('user_id', None)
-            users = User.objects.get(auth_token=user)
-            rare_user = RareUser.objects.get(user=users)
             if user is not None:
+                users = User.objects.get(auth_token=user)
+                rare_user = RareUser.objects.get(user=users)
                 posts = posts.filter(user=rare_user)
             serializer = PostSerializer(posts, many=True)
             return Response(serializer.data)
