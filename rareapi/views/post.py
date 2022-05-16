@@ -64,7 +64,7 @@ class PostView(ViewSet):
         """ POST a post """
 
         user = RareUser.objects.get(user=request.auth.user)
-        category = Category.objects.get(pk=request.data['category'])
+        category = Category.objects.get(pk=request.data['category_id'])
         
         serializer = CreatePostSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
