@@ -36,13 +36,11 @@ class PostView(ViewSet):
                 rare_user = RareUser.objects.get(user=users)
                 posts = posts.filter(user=rare_user)
             else:
-                posts = Post.objects.all()
-            
-            for post in posts:
-                if post.user_id == request.auth.user.id:
-                    post.is_author = True
-                else:
-                    post.is_author = False
+                for post in posts:
+                    if post.user_id == request.auth.user.id:
+                        post.is_author = True
+                    else:
+                        post.is_author = False
 
             serializer = PostSerializer(posts, many=True)
             return Response(serializer.data)
@@ -51,32 +49,32 @@ class PostView(ViewSet):
 
     def update(self, request, pk):
         """Handle PUT requests for a post"""
-  
+
         post = Post.objects.get(pk=pk)
         serializer = CreatePostSerializer(post, data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
         return Response(None, status=status.HTTP_204_NO_CONTENT)
-    
+
 
     def create(self, request):
         """ POST a post """
 
         user = RareUser.objects.get(user=request.auth.user)
         category = Category.objects.get(pk=request.data['category_id'])
-        
+
         serializer = CreatePostSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save(user=user, category=category)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    
+
     def destroy(self, request, pk):
         post = Post.objects.get(pk=pk)
         post.delete()
         return Response(None, status=status.HTTP_204_NO_CONTENT)
 
-    
+
 class PostSerializer(serializers.ModelSerializer):
     """JSON serializer for post/posts """
     class Meta:
