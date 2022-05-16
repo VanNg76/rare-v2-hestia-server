@@ -25,7 +25,7 @@ class CommentView(ViewSet):
             Response -- JSON serialized list of comments
         """
         try:
-            comments = Comment.objects.all()
+            comments = Comment.objects.order_by('-created_on')
             for comment in comments:
                 if comment.author_id == request.auth.user.id:
                     comment.is_author = True
