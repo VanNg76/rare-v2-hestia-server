@@ -31,12 +31,17 @@ class PostView(ViewSet):
         """
         try:
             search_text = self.request.query_params.get('title', None)
+            filter_cat = self.request.query_params.get('category', None)
             user = request.query_params.get('user_id', None)
             posts = Post.objects.all()
             
             if search_text is not None:
                 posts = posts.filter(
                     Q(title__contains=search_text)
+                )
+            if filter_cat is not None:
+                posts = posts.filter(
+                    Q(category_id=filter_cat)
                 )
             if user is not None:
                 # users = User.objects.get(auth_token=user)
