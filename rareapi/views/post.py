@@ -31,16 +31,16 @@ class PostView(ViewSet):
         try:
             posts = Post.objects.all()
             user = request.query_params.get('user_id', None)
+            
             if user is not None:
-                users = User.objects.get(auth_token=user)
-                rare_user = RareUser.objects.get(user=users)
-                posts = posts.filter(user=rare_user)
-            else:
-                for post in posts:
-                    if post.user_id == request.auth.user.id:
-                        post.is_author = True
-                    else:
-                        post.is_author = False
+                # users = User.objects.get(auth_token=user)
+                # rare_user = RareUser.objects.get(user=users)
+                posts = posts.filter(user_id=user)
+            for post in posts:
+                if post.user_id == request.auth.user.id:
+                    post.is_author = True
+                else:
+                    post.is_author = False
 
             serializer = PostSerializer(posts, many=True)
             return Response(serializer.data)
