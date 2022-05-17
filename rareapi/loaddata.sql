@@ -1,3 +1,5 @@
+delete from rareapi_comment
+where id = 4
 delete from rareapi_postreaction
 where id >1
 
