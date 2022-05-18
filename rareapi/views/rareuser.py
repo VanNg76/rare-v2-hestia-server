@@ -6,6 +6,7 @@ from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 
 from rareapi.models import RareUser, Post
+from .post import PostSerializer
 
 
 class RareUserView(ViewSet):
@@ -14,16 +15,22 @@ class RareUserView(ViewSet):
         """ single rareuser """
         try:
             rareuser = RareUser.objects.get(pk=pk)
-            posts_by_user = Post.objects.filter(user_id=pk)
-            serializer = RareUserSerializer(rareuser)
+            # return postCount to client
+            # posts_by_user = Post.objects.filter(user_id=pk)
+            # serializer = RareUserSerializer(rareuser)
             
-            # create a copy of serializer.data
-            serializer_data = serializer.data
+            # # create a copy of serializer.data
+            # serializer_data = serializer.data
             
-            # add a property (w/o modify class, or add a custom property to class)
-            serializer_data["postCount"] = len(posts_by_user)
+            # # add a property (w/o modify class, or add a custom property to class)
+            # serializer_data["postCount"] = len(posts_by_user)
             
-            return Response(serializer_data)
+            # return Response(serializer_data)
+            
+            # return all posts to client
+            serializer = RareUserEventSerializer(rareuser)
+            return Response(serializer.data)
+            
         except RareUser.DoesNotExist as ex:
             return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
 
@@ -48,3 +55,16 @@ class RareUserSerializer(serializers.ModelSerializer):
         model = RareUser
         fields = ('id', 'bio', 'user')
         depth = 1
+
+class RareUserEventSerializer(serializers.ModelSerializer):
+    """add events into single rareuser"""
+    posts = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = RareUser
+        fields = ('id', 'bio', 'user', 'posts')
+        depth = 1
+
+    def get_posts(self, pk):
+        posts_by_user = Post.objects.filter(user_id=pk)
+        return PostSerializer(posts_by_user, many=True).data        
