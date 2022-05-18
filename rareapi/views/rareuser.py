@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework import serializers, status
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
+from rest_framework.decorators import action
 
 from rareapi.models import RareUser
 
@@ -32,10 +33,30 @@ class RareUserView(ViewSet):
         serializer = RareUserSerializer(rareusers, many=True)
         return Response(serializer.data)
 
-    
+    @action(methods=['put'], detail=True)
+    def reactivate(self, request, pk):
+        """Put request for a user to be reactivated"""
+
+        rareuser = RareUser.objects.get(pk=pk)
+        serializer = RareUserSerializer(rareuser, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({'message': 'User Reactivated'}, status=status.HTTP_204_NO_CONTENT)
+
+    @action(methods=['put'], detail=True)
+    def deactivate(self, request, pk):
+        """Put request for a user to be deactivated"""
+
+        rareuser = RareUser.objects.get(pk=pk)
+        serializer = RareUserSerializer(rareuser, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({'message': 'User Deactivated'}, status=status.HTTP_204_NO_CONTENT)
+
+
 class RareUserSerializer(serializers.ModelSerializer):
     """JSON serializer for RareUser """
     class Meta:
         model = RareUser
-        fields = ('id', 'bio', 'user')
+        fields = ('id', 'bio', 'profile_image_url', 'active', 'user', 'created_on')
         depth = 1
