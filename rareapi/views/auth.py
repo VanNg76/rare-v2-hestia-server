@@ -24,7 +24,7 @@ def login_user(request):
     authenticated_user = authenticate(username=username, password=password)
 
     # If authentication was successful, respond with their token
-    if authenticated_user is not None:
+    if authenticated_user.rareuser.active == True:
         token = Token.objects.get(user=authenticated_user)
         data = {
             'valid': True,

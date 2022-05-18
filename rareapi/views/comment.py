@@ -25,9 +25,10 @@ class CommentView(ViewSet):
             Response -- JSON serialized list of comments
         """
         try:
+            rareuser = RareUser.objects.get(user=request.auth.user)
             comments = Comment.objects.order_by('-created_on')
             for comment in comments:
-                if comment.author_id == request.auth.user.id:
+                if comment.author_id == rareuser.id:
                     comment.is_author = True
                 else:
                     comment.is_author = False
