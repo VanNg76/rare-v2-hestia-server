@@ -1,11 +1,11 @@
-delete from rareapi_comment
-where id = 4
+delete from auth_user
+where id = 3
 delete from rareapi_postreaction
-where id >1
+where id > 1
 
-update rareapi_post
-set user_id = 2
-where id in (5,6,7);
+UPDATE rareapi_rareuser
+SET active = 0
+WHERE id = 1
 
 INSERT INTO rareapi_comment (created_on, content, author_id, post_id)
 VALUES ('2020-01-05', 'SQL comment', 2, 1)
