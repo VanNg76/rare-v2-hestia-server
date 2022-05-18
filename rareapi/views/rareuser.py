@@ -16,20 +16,20 @@ class RareUserView(ViewSet):
         try:
             rareuser = RareUser.objects.get(pk=pk)
             # return postCount to client
-            # posts_by_user = Post.objects.filter(user_id=pk)
-            # serializer = RareUserSerializer(rareuser)
+            posts_by_user = Post.objects.filter(user_id=pk)
+            serializer = RareUserSerializer(rareuser)
             
-            # # create a copy of serializer.data
-            # serializer_data = serializer.data
+            # create a copy of serializer.data
+            serializer_data = serializer.data
             
-            # # add a property (w/o modify class, or add a custom property to class)
-            # serializer_data["postCount"] = len(posts_by_user)
+            # add a property (w/o modify class, or add a custom property to class)
+            serializer_data["postCount"] = len(posts_by_user)
             
-            # return Response(serializer_data)
+            return Response(serializer_data)
             
-            # return all posts to client
-            serializer = RareUserEventSerializer(rareuser)
-            return Response(serializer.data)
+            # return filtered posts to client
+            # serializer = RareUserEventSerializer(rareuser)
+            # return Response(serializer.data)
             
         except RareUser.DoesNotExist as ex:
             return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
@@ -57,7 +57,7 @@ class RareUserSerializer(serializers.ModelSerializer):
         depth = 1
 
 class RareUserEventSerializer(serializers.ModelSerializer):
-    """add events into single rareuser"""
+    """add filtered posts into single rareuser"""
     posts = serializers.SerializerMethodField()
     
     class Meta:
