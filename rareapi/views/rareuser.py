@@ -5,7 +5,7 @@ from rest_framework import serializers, status
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 
-from rareapi.models import RareUser
+from rareapi.models import RareUser, Post
 
 
 class RareUserView(ViewSet):
@@ -14,8 +14,16 @@ class RareUserView(ViewSet):
         """ single rareuser """
         try:
             rareuser = RareUser.objects.get(pk=pk)
+            posts_by_user = Post.objects.filter(user_id=pk)
             serializer = RareUserSerializer(rareuser)
-            return Response(serializer.data)
+            
+            # create a copy of serializer.data
+            serializer_data = serializer.data
+            
+            # add a property (w/o modify class, or add a custom property to class)
+            serializer_data["postCount"] = len(posts_by_user)
+            
+            return Response(serializer_data)
         except RareUser.DoesNotExist as ex:
             return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
 
@@ -35,6 +43,7 @@ class RareUserView(ViewSet):
     
 class RareUserSerializer(serializers.ModelSerializer):
     """JSON serializer for RareUser """
+    
     class Meta:
         model = RareUser
         fields = ('id', 'bio', 'user')
