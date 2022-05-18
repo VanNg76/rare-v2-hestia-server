@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework import serializers, status
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
+from django.db.models import Q  # use for search query
 
 from rareapi.models import RareUser, Category, Post
 
@@ -29,9 +30,19 @@ class PostView(ViewSet):
             Response -- JSON serialized list of posts
         """
         try:
-            posts = Post.objects.all()
+            search_text = self.request.query_params.get('title', None)
+            filter_cat = self.request.query_params.get('category', None)
             user = request.query_params.get('user_id', None)
+            posts = Post.objects.all()
             
+            if search_text is not None:
+                posts = posts.filter(
+                    Q(title__contains=search_text)
+                )
+            if filter_cat is not None:
+                posts = posts.filter(
+                    Q(category_id=filter_cat)
+                )
             if user is not None:
                 # users = User.objects.get(auth_token=user)
                 # rare_user = RareUser.objects.get(user=users)
