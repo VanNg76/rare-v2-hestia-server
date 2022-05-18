@@ -7,7 +7,8 @@ from django.contrib.auth.models import User
 from rest_framework.decorators import action
 from django.db.models import Q  # use for search query
 
-from rareapi.models import RareUser
+from rareapi.models import RareUser, Post
+from .post import PostSerializer
 
 
 class RareUserView(ViewSet):
@@ -19,8 +20,22 @@ class RareUserView(ViewSet):
                 rareuser = RareUser.objects.get(user_id=request.auth.user)
             else:
                 rareuser = RareUser.objects.get(pk=pk)
+            # return postCount to client
+            posts_by_user = Post.objects.filter(user_id=pk)
             serializer = RareUserSerializer(rareuser)
-            return Response(serializer.data)
+
+            # create a copy of serializer.data
+            serializer_data = serializer.data
+
+            # add a property (w/o modify class, or add a custom property to class)
+            serializer_data["postCount"] = len(posts_by_user)
+
+            return Response(serializer_data)
+
+            # return filtered posts to client
+            # serializer = RareUserEventSerializer(rareuser)
+            # return Response(serializer.data)
+
         except RareUser.DoesNotExist as ex:
             return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
 
@@ -62,8 +77,20 @@ class RareUserView(ViewSet):
 
 class RareUserSerializer(serializers.ModelSerializer):
     """JSON serializer for RareUser """
-
     class Meta:
         model = RareUser
         fields = ('id', 'bio', 'profile_image_url', 'active', 'user', 'created_on')
         depth = 1
+
+class RareUserEventSerializer(serializers.ModelSerializer):
+    """add filtered posts into single rareuser"""
+    posts = serializers.SerializerMethodField()
+
+    class Meta:
+        model = RareUser
+        fields = ('id', 'bio', 'user', 'posts')
+        depth = 1
+
+    def get_posts(self, pk):
+        posts_by_user = Post.objects.filter(user_id=pk)
+        return PostSerializer(posts_by_user, many=True).data

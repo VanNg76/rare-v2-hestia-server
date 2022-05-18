@@ -8,3 +8,11 @@ class RareUser(models.Model):
     created_on = models.DateField()
     active = models.BooleanField()
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+
+    # @property
+    # def postCount(self):
+    #     return self.__postCount
+
+    # @postCount.setter
+    # def postCount(self, value):
+    #     self.__postCount = value

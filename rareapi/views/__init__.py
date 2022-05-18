@@ -1,4 +1,4 @@
-from .post import PostView
+from .post import PostView, PostSerializer
 from .category import CategoryView
 from .auth import login_user, register_user
 from .tag import TagView
