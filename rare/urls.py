@@ -20,8 +20,10 @@ from rareapi.views import register_user, login_user, CategoryView
 from rest_framework import routers
 from rareapi.views.comment import CommentView
 from rareapi.views.post import PostView
+from rareapi.views.subscription import SubscriptionView
 from rareapi.views.tag import TagView
 from rareapi.views.rareuser import RareUserView
+from rareapi.views import MyPostView
 from rareapi.views import MyPostView
 
 router = routers.DefaultRouter(trailing_slash=False)
@@ -31,6 +33,7 @@ router.register(r'categories', CategoryView, 'category')
 router.register(r'tags', TagView, 'tag')
 router.register(r'comments', CommentView, 'comment' )
 router.register(r'users', RareUserView, 'rareuser' )
+router.register(r'subscriptions', SubscriptionView, 'subscription' )
 
 urlpatterns = [
     path('admin/', admin.site.urls),
