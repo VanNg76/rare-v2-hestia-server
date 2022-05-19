@@ -28,4 +28,7 @@ values ("2022-07-07", "2022-06-09", 1,3);
 insert into rareapi_subscription (created_on, ended_on, author_id, follower_id)
 values ("2022-09-09", "2022-10-10", 2,4);
 insert into rareapi_subscription (created_on, ended_on, author_id, follower_id)
-values ("2022-05-10", "2022-06-11", 1,4);
+values ("2022-05-10", "2022-06-11", 4,1);
+
+delete from rareapi_subscription
+where id = 9
