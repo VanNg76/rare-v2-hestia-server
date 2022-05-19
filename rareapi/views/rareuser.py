@@ -4,6 +4,8 @@ from rest_framework.response import Response
 from rest_framework import serializers, status
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
+from rest_framework.decorators import action
+from django.db.models import Q  # use for search query
 
 from rareapi.models import RareUser, Post
 from .post import PostSerializer
@@ -14,23 +16,26 @@ class RareUserView(ViewSet):
     def retrieve(self, request, pk):
         """ single rareuser """
         try:
-            rareuser = RareUser.objects.get(pk=pk)
+            if pk == '0':
+                rareuser = RareUser.objects.get(user_id=request.auth.user)
+            else:
+                rareuser = RareUser.objects.get(pk=pk)
             # return postCount to client
             posts_by_user = Post.objects.filter(user_id=pk)
             serializer = RareUserSerializer(rareuser)
-            
+
             # create a copy of serializer.data
             serializer_data = serializer.data
-            
+
             # add a property (w/o modify class, or add a custom property to class)
             serializer_data["postCount"] = len(posts_by_user)
-            
+
             return Response(serializer_data)
-            
+
             # return filtered posts to client
             # serializer = RareUserEventSerializer(rareuser)
             # return Response(serializer.data)
-            
+
         except RareUser.DoesNotExist as ex:
             return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
 
@@ -41,25 +46,46 @@ class RareUserView(ViewSet):
             Response -- JSON serialized list of rareusers
         """
         rareusers = RareUser.objects.all()
+        user_id = request.query_params.get('user_id', None)
         for rareuser in rareusers:
             user = User.objects.get(pk=rareuser.user_id)
             rareuser.user = user
+
         serializer = RareUserSerializer(rareusers, many=True)
         return Response(serializer.data)
 
-    
+    @action(methods=['put'], detail=True)
+    def reactivate(self, request, pk):
+        """Put request for a user to be reactivated"""
+
+        rareuser = RareUser.objects.get(pk=pk)
+        serializer = RareUserSerializer(rareuser, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({'message': 'User Reactivated'}, status=status.HTTP_204_NO_CONTENT)
+
+    @action(methods=['put'], detail=True)
+    def deactivate(self, request, pk):
+        """Put request for a user to be deactivated"""
+
+        rareuser = RareUser.objects.get(pk=pk)
+        serializer = RareUserSerializer(rareuser, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({'message': 'User Deactivated'}, status=status.HTTP_204_NO_CONTENT)
+
+
 class RareUserSerializer(serializers.ModelSerializer):
     """JSON serializer for RareUser """
-    
     class Meta:
         model = RareUser
-        fields = ('id', 'bio', 'user')
+        fields = ('id', 'bio', 'profile_image_url', 'active', 'user', 'created_on')
         depth = 1
 
 class RareUserEventSerializer(serializers.ModelSerializer):
     """add filtered posts into single rareuser"""
     posts = serializers.SerializerMethodField()
-    
+
     class Meta:
         model = RareUser
         fields = ('id', 'bio', 'user', 'posts')
@@ -67,4 +93,4 @@ class RareUserEventSerializer(serializers.ModelSerializer):
 
     def get_posts(self, pk):
         posts_by_user = Post.objects.filter(user_id=pk)
-        return PostSerializer(posts_by_user, many=True).data        
+        return PostSerializer(posts_by_user, many=True).data

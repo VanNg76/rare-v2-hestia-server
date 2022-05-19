@@ -33,8 +33,9 @@ class PostView(ViewSet):
             search_text = self.request.query_params.get('title', None)
             filter_cat = self.request.query_params.get('category', None)
             user = request.query_params.get('user_id', None)
+            approved = request.query_params.get('approved', None)
             posts = Post.objects.all()
-            
+
             if search_text is not None:
                 posts = posts.filter(
                     Q(title__contains=search_text)
@@ -47,6 +48,10 @@ class PostView(ViewSet):
                 # users = User.objects.get(auth_token=user)
                 # rare_user = RareUser.objects.get(user=users)
                 posts = posts.filter(user_id=user)
+            if approved is not None:
+                posts = posts.filter(
+                    Q(approved=approved)
+                )
             for post in posts:
                 if post.user_id == request.auth.user.id:
                     post.is_author = True
