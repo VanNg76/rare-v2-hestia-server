@@ -8,6 +8,7 @@ class RareUser(models.Model):
     created_on = models.DateField()
     active = models.BooleanField()
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    admin_approval = models.IntegerField(default=0)
 
     @property
     def is_admin(self):

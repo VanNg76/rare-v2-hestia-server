@@ -13,6 +13,7 @@ from .post import PostSerializer
 
 class RareUserView(ViewSet):
     """ RareUser view """
+
     def retrieve(self, request, pk):
         """ single rareuser """
         try:
@@ -65,9 +66,8 @@ class RareUserView(ViewSet):
         """Put request for a user to be reactivated"""
 
         rareuser = RareUser.objects.get(pk=pk)
-        serializer = RareUserSerializer(rareuser, data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
+        rareuser.active = True
+        rareuser.save()
         return Response({'message': 'User Reactivated'}, status=status.HTTP_204_NO_CONTENT)
 
     @action(methods=['put'], detail=True)
@@ -75,9 +75,13 @@ class RareUserView(ViewSet):
         """Put request for a user to be deactivated"""
 
         rareuser = RareUser.objects.get(pk=pk)
-        serializer = RareUserSerializer(rareuser, data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
+        if rareuser.admin_approval == 0:
+            rareuser.admin_approval = 1
+            rareuser.save()
+        else:
+            rareuser.admin_approval = 0
+            rareuser.active = False
+            rareuser.save()
         return Response({'message': 'User Deactivated'}, status=status.HTTP_204_NO_CONTENT)
 
     @action(methods=['put'], detail=True)
@@ -85,9 +89,15 @@ class RareUserView(ViewSet):
         """Put request for a user to be demoted"""
 
         rareuser = RareUser.objects.get(pk=pk)
-        user = User.objects.get(pk=rareuser.user_id)
-        user.is_staff = False
-        user.save()
+        if rareuser.admin_approval == 0:
+            rareuser.admin_approval = 1
+            rareuser.save()
+        else:
+            user = User.objects.get(pk=rareuser.user_id)
+            rareuser.admin_approval = 0
+            user.is_staff = False
+            rareuser.save()
+            user.save()
         return Response({'message': 'User Demoted'}, status=status.HTTP_204_NO_CONTENT)
 
     @action(methods=['put'], detail=True)
@@ -100,12 +110,15 @@ class RareUserView(ViewSet):
         user.save()
         return Response({'message': 'User Promoted'}, status=status.HTTP_204_NO_CONTENT)
 
+
 class RareUserSerializer(serializers.ModelSerializer):
     """JSON serializer for RareUser """
     class Meta:
         model = RareUser
-        fields = ('id', 'bio', 'profile_image_url', 'active', 'user', 'created_on', 'is_admin', 'admin_count')
+        fields = ('id', 'bio', 'profile_image_url', 'active', 'user',
+                  'created_on', 'is_admin', 'admin_count', 'admin_approval')
         depth = 1
+
 
 class RareUserEventSerializer(serializers.ModelSerializer):
     """add filtered posts into single rareuser"""
