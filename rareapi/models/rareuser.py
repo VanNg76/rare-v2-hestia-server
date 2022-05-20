@@ -9,6 +9,14 @@ class RareUser(models.Model):
     active = models.BooleanField()
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
+    @property
+    def is_admin(self):
+        return self.__is_admin
+
+    @is_admin.setter
+    def is_admin(self, value):
+        self.__is_admin = value
+
     # @property
     # def postCount(self):
     #     return self.__postCount
