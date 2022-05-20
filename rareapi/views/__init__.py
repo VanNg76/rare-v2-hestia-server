@@ -6,3 +6,5 @@ from .rareuser import RareUserView
 from .comment import CommentView
 from .mypost import MyPostView
 from .subscription import SubscriptionView
+from .postreaction import PostReactionView
+from .reaction import ReactionView
