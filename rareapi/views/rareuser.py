@@ -76,7 +76,7 @@ class RareUserView(ViewSet):
 
         rareuser = RareUser.objects.get(pk=pk)
         if rareuser.admin_approval == 0:
-            rareuser.admin_approval = 1
+            rareuser.admin_approval = rareuser.id
             rareuser.save()
         else:
             rareuser.admin_approval = 0
@@ -88,9 +88,11 @@ class RareUserView(ViewSet):
     def demote(self, request, pk):
         """Put request for a user to be demoted"""
 
+
         rareuser = RareUser.objects.get(pk=pk)
+        currentuser = RareUser.objects.get(user=request.auth.user)
         if rareuser.admin_approval == 0:
-            rareuser.admin_approval = 1
+            rareuser.admin_approval = currentuser.id
             rareuser.save()
         else:
             user = User.objects.get(pk=rareuser.user_id)
