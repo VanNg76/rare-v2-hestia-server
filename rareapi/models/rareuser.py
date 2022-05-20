@@ -17,6 +17,14 @@ class RareUser(models.Model):
     def is_admin(self, value):
         self.__is_admin = value
 
+    @property
+    def admin_count(self):
+        return self.__admin_count
+
+    @admin_count.setter
+    def admin_count(self, value):
+        self.__admin_count = value
+
     # @property
     # def postCount(self):
     #     return self.__postCount

@@ -46,15 +46,17 @@ class RareUserView(ViewSet):
             Response -- JSON serialized list of rareusers
         """
         rareusers = RareUser.objects.all()
+        users = User.objects.all()
+        adminCount = users.filter(is_staff=True)
         user_id = request.query_params.get('user_id', None)
         for rareuser in rareusers:
             user = User.objects.get(pk=rareuser.user_id)
             rareuser.user = user
+            rareuser.admin_count = len(adminCount)
             if rareuser.user.is_staff == True:
                 rareuser.is_admin = True
             else:
                 rareuser.is_admin = False
-
         serializer = RareUserSerializer(rareusers, many=True)
         return Response(serializer.data)
 
@@ -102,7 +104,7 @@ class RareUserSerializer(serializers.ModelSerializer):
     """JSON serializer for RareUser """
     class Meta:
         model = RareUser
-        fields = ('id', 'bio', 'profile_image_url', 'active', 'user', 'created_on', 'is_admin')
+        fields = ('id', 'bio', 'profile_image_url', 'active', 'user', 'created_on', 'is_admin', 'admin_count')
         depth = 1
 
 class RareUserEventSerializer(serializers.ModelSerializer):
