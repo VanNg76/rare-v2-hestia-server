@@ -18,6 +18,8 @@ class MyPostView(ViewSet):
         try:
             posts = Post.objects.all()
             posts = posts.filter(user_id=request.auth.user.id)
+            for post in posts:
+                post.is_author = True
 
             serializer = MyPostSerializer(posts, many=True)
             return Response(serializer.data)
